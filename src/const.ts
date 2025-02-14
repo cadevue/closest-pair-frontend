@@ -1,0 +1,28 @@
+const MAX_NUM_OF_POINTS = 10000;
+const MIN_NUM_OF_POINTS = 1000;
+const INITIAL_NUM_OF_POINTS = 5000;
+
+const MIN_POS_BOUND = -100;
+const MAX_POS_BOUND = 100;
+
+const MAX_POINT_SIZE = 4;
+const MIN_POINT_SIZE = 0.01;
+const INITIAL_POINT_SIZE = 2;
+
+const DEFAULT_POINT_COLOR = "#ba3a2c";
+const CANVAS_COLOR = "#181818";
+
+const Constants = {
+    MAX_NUM_OF_POINTS,
+    MIN_NUM_OF_POINTS,
+    INITIAL_NUM_OF_POINTS,
+    MIN_POS_BOUND,
+    MAX_POS_BOUND,
+    MAX_POINT_SIZE,
+    MIN_POINT_SIZE,
+    INITIAL_POINT_SIZE,
+    DEFAULT_POINT_COLOR,
+    CANVAS_COLOR
+};
+
+export default Constants;

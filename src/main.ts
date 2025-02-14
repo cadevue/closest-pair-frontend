@@ -1,95 +1,29 @@
 import * as THREE from "three"
-import { OrbitControls } from "three/addons/controls/OrbitControls.js"
-import { generateRandomPoints, Point, pointsToFloat32Array } from "./libs/point";
+import { generateRandomPoints, Point, pointsToFloat32Array } from "./point";
 import 'vanilla-colorful';
+import Constants from "./const";
+import { createScatterPlotRenderer } from "./plot";
 
-const MAX_NUM_OF_POINTS = 100000;
-const MIN_NUM_OF_POINTS = 1000;
-const INITIAL_NUM_OF_POINTS = 50000;
+/** Variables */
+let numOfPoints = Constants.INITIAL_NUM_OF_POINTS;
+let pointSize = Constants.INITIAL_POINT_SIZE;
+let pointColor = Constants.DEFAULT_POINT_COLOR;
+let pointArr : Array<Point> = generateRandomPoints(
+    Constants.MAX_NUM_OF_POINTS,
+    Constants.MIN_POS_BOUND, 
+    Constants.MAX_POS_BOUND
+);
 
-const MIN_POS_BOUND = -100;
-const MAX_POS_BOUND = 100;
-
-const MAX_POINT_SIZE = 2;
-const MIN_POINT_SIZE = 0.01;
-const INITIAL_POINT_SIZE = 0.5;
-
-const DEFAULT_POINT_COLOR = "#ba3a2c";
-const CANVAS_COLOR = "#181818";
-
-let numOfPoints = INITIAL_NUM_OF_POINTS;
-let pointSize = INITIAL_POINT_SIZE;
-let pointColor = DEFAULT_POINT_COLOR;
-let pointArr : Array<Point> = generateRandomPoints(MAX_NUM_OF_POINTS, MIN_POS_BOUND, MAX_POS_BOUND);
-
-const center = (MAX_POS_BOUND + MIN_POS_BOUND) / 2;
-const size = MAX_POS_BOUND - MIN_POS_BOUND;
+const center = (Constants.MAX_POS_BOUND + Constants.MIN_POS_BOUND) / 2;
+const spread = Constants.MAX_POS_BOUND - Constants.MIN_POS_BOUND;
 
 const dncContainer = document.getElementById("divideAndConquerContainer") as HTMLElement;
-const dncScatterPlotRenderer = createScatterPlotRenderer(dncContainer);
+const dncScatterPlotRenderer = createScatterPlotRenderer(dncContainer, pointArr, numOfPoints);
 
 const bruteForceContainer = document.getElementById("bruteforceContainer") as HTMLElement;
-const bruteForceScatterPlotRenderer = createScatterPlotRenderer(bruteForceContainer);
+const bruteForceScatterPlotRenderer = createScatterPlotRenderer(bruteForceContainer, pointArr, numOfPoints);
 
-function createScatterPlotRenderer(container : HTMLElement) {
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 2000);
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setClearColor(CANVAS_COLOR, 1);
-    container.appendChild(renderer.domElement);
-
-    renderer.domElement.onmousedown = (e: MouseEvent) => {
-        switch (e.button) {
-            case 0:
-                document.body.style.cursor = "grabbing";
-                break;
-            case 1:
-                document.body.style.cursor = "zoom-in";
-                break;
-            case 2:
-                document.body.style.cursor = "move";
-                break;
-            default:
-                document.body.style.cursor = "default";
-        }
-    }
-    renderer.domElement.onmouseup = () => { document.body.style.cursor = "default"; }
-    window.addEventListener('resize', () => {
-        camera.aspect = container.clientWidth / container.clientHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(container.clientWidth, container.clientHeight);
-    });
-
-    const controls = new OrbitControls(camera, renderer.domElement);
-
-    controls.target.set(center, center, center);
-    camera.position.set(size, size, size);
-
-    const geometry = new THREE.BufferGeometry();
-    const material = new THREE.PointsMaterial({ size: pointSize, color: pointColor });
-
-    const positions = pointsToFloat32Array(pointArr, numOfPoints);
-    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-
-    const points = new THREE.Points(geometry, material);
-    scene.add(points);
-
-    function animate() {
-        requestAnimationFrame(animate);
-
-        controls.update();
-        renderer.render(scene, camera);
-    }
-
-    animate();
-
-    return {
-        geometry,
-        material
-    }
-}
-
+/** State Syncing */
 function syncBuffer() {
     const positions = pointsToFloat32Array(pointArr, numOfPoints);
 
@@ -105,14 +39,15 @@ function syncMaterial() {
     bruteForceScatterPlotRenderer.material.color.set(pointColor);
 }
 
+/** DOM Binding */
 function uiBind() {
     const numOfPointsSlider = document.getElementById("numOfPoints") as HTMLInputElement;
     const numOfPointsValue = document.getElementById("numOfPointsValue") as HTMLSpanElement;
 
-    numOfPointsSlider.min = MIN_NUM_OF_POINTS.toString();
-    numOfPointsSlider.max = MAX_NUM_OF_POINTS.toString();
+    numOfPointsSlider.min = Constants.MIN_NUM_OF_POINTS.toString();
+    numOfPointsSlider.max = Constants.MAX_NUM_OF_POINTS.toString();
     numOfPointsSlider.step = "1";
-    numOfPointsSlider.value = INITIAL_NUM_OF_POINTS.toString();
+    numOfPointsSlider.value = Constants.INITIAL_NUM_OF_POINTS.toString();
     numOfPointsValue.innerHTML = numOfPointsSlider.value;
 
     numOfPointsSlider.oninput = function() {
@@ -125,10 +60,10 @@ function uiBind() {
     const pointSizeSlider = document.getElementById("pointSize") as HTMLInputElement;
     const pointSizeValue = document.getElementById("pointSizeValue") as HTMLSpanElement;
 
-    pointSizeSlider.min = MIN_POINT_SIZE.toString();
-    pointSizeSlider.max = MAX_POINT_SIZE.toString();
+    pointSizeSlider.min = Constants.MIN_POINT_SIZE.toString();
+    pointSizeSlider.max = Constants.MAX_POINT_SIZE.toString();
     pointSizeSlider.step = "0.01";
-    pointSizeSlider.value = INITIAL_POINT_SIZE.toString();
+    pointSizeSlider.value = Constants.INITIAL_POINT_SIZE.toString();
     pointSizeValue.innerHTML = pointSizeSlider.value;
 
     pointSizeSlider.oninput = function() {
@@ -139,7 +74,7 @@ function uiBind() {
     }
 
     const pointColorPicker = document.querySelector('hex-color-picker') as HTMLElement;
-    pointColorPicker.setAttribute('color', DEFAULT_POINT_COLOR);
+    pointColorPicker.setAttribute('color', Constants.DEFAULT_POINT_COLOR);
 
     // @ts-ignore, no types for vanilla-colorful
     pointColorPicker.addEventListener('color-changed', (e: CustomEvent) => {
@@ -150,16 +85,32 @@ function uiBind() {
 
     const resetColorButton = document.getElementById("resetColor") as HTMLButtonElement;
     resetColorButton.onclick = function() {
-        pointColor = DEFAULT_POINT_COLOR;
-        pointColorPicker.setAttribute('color', DEFAULT_POINT_COLOR);
+        pointColor = Constants.DEFAULT_POINT_COLOR;
+        pointColorPicker.setAttribute('color', Constants.DEFAULT_POINT_COLOR);
         syncMaterial();
+    }
+
+    const resetDncCameraButton = document.getElementById("resetDnCCam") as HTMLButtonElement;
+    resetDncCameraButton.onclick = function() {
+        dncScatterPlotRenderer.controls.target.set(center, center, center);
+        dncScatterPlotRenderer.camera.position.set(spread, spread, spread);
+    }
+
+    const resetBruteForceCameraButton = document.getElementById("resetBruteforceCam") as HTMLButtonElement;
+    resetBruteForceCameraButton.onclick = function() {
+        bruteForceScatterPlotRenderer.controls.target.set(center, center, center);
+        bruteForceScatterPlotRenderer.camera.position.set(spread, spread, spread);
     }
 }
 
 function actionBind() {
     const generateRandomPointsButton = document.getElementById("generatePoints") as HTMLButtonElement;
     generateRandomPointsButton.onclick = function() {
-        pointArr = generateRandomPoints(MAX_NUM_OF_POINTS, MIN_POS_BOUND, MAX_POS_BOUND);
+        pointArr = generateRandomPoints(
+            Constants.MAX_NUM_OF_POINTS,
+            Constants.MIN_POS_BOUND, 
+            Constants.MAX_POS_BOUND
+        );
         syncBuffer();
     }
 
