@@ -22,6 +22,9 @@ let pointSize = INITIAL_POINT_SIZE;
 let pointColor = DEFAULT_POINT_COLOR;
 let pointArr : Array<Point> = generateRandomPoints(MAX_NUM_OF_POINTS, MIN_POS_BOUND, MAX_POS_BOUND);
 
+const center = (MAX_POS_BOUND + MIN_POS_BOUND) / 2;
+const size = MAX_POS_BOUND - MIN_POS_BOUND;
+
 const dncContainer = document.getElementById("divideAndConquerContainer") as HTMLElement;
 const dncScatterPlotRenderer = createScatterPlotRenderer(dncContainer);
 
@@ -38,11 +41,13 @@ function createScatterPlotRenderer(container : HTMLElement) {
 
     renderer.domElement.onmousedown = () => { document.body.style.cursor = "grabbing"; }
     renderer.domElement.onmouseup = () => { document.body.style.cursor = "default"; }
+    window.addEventListener('resize', () => {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+    });
 
     const controls = new OrbitControls(camera, renderer.domElement);
-
-    const center = (MAX_POS_BOUND + MIN_POS_BOUND) / 2;
-    const size = MAX_POS_BOUND - MIN_POS_BOUND;
 
     controls.target.set(center, center, center);
     camera.position.set(size, size, size);

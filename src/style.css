@@ -66,19 +66,19 @@ h2 {
 }
 
 h3 {
-  @apply text-sm font-semibold;
+  @apply text-xs font-semibold;
 }
 
 p {
-  @apply text-sm;
+  @apply text-xs;
 }
 
 span {
-  @apply text-sm;
+  @apply text-xs;
 }
 
 a {
-  @apply text-sm underline text-light-accent hover:text-accent;
+  @apply text-xs underline text-light-accent hover:text-accent;
 }
 
 ul {
@@ -86,11 +86,11 @@ ul {
 }
 
 li {
-  @apply ml-10 mb-1 text-sm;
+  @apply ml-10 mb-1 text-xs;
 }
 
 label {
-  @apply text-sm;
+  @apply text-xs;
 }
 
 input[type='range'] {
