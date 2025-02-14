@@ -39,7 +39,21 @@ function createScatterPlotRenderer(container : HTMLElement) {
     renderer.setClearColor(CANVAS_COLOR, 1);
     container.appendChild(renderer.domElement);
 
-    renderer.domElement.onmousedown = () => { document.body.style.cursor = "grabbing"; }
+    renderer.domElement.onmousedown = (e: MouseEvent) => {
+        switch (e.button) {
+            case 0:
+                document.body.style.cursor = "grabbing";
+                break;
+            case 1:
+                document.body.style.cursor = "zoom-in";
+                break;
+            case 2:
+                document.body.style.cursor = "move";
+                break;
+            default:
+                document.body.style.cursor = "default";
+        }
+    }
     renderer.domElement.onmouseup = () => { document.body.style.cursor = "default"; }
     window.addEventListener('resize', () => {
         camera.aspect = container.clientWidth / container.clientHeight;
