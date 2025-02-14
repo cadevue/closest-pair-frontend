@@ -8,3 +8,7 @@ const INITIAL_NUM_OF_POINTS = 2000;
 
 let numOfPoints = INITIAL_NUM_OF_POINTS;
 let points : Array<Point> = new Array(MAX_NUM_OF_POINTS);
+
+function createScatterPlotRenderer() {
+
+}
