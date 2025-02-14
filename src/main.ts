@@ -4,6 +4,21 @@ import 'vanilla-colorful';
 import Constants from "./const";
 import { createScatterPlotRenderer } from "./plot";
 
+/** Overlay */
+const overlay = document.getElementById("overlay") as HTMLElement;
+if (window.innerWidth < 960 || window.innerHeight < 320) {
+    overlay.classList.remove("hidden");
+}
+
+window.addEventListener('resize', () => {
+    if (window.innerWidth < 960 || window.innerHeight < 320) {
+        overlay.classList.remove("hidden");
+    } else {
+        overlay.classList.add("hidden");
+    }
+});
+
+
 /** Variables */
 let numOfPoints = Constants.INITIAL_NUM_OF_POINTS;
 let pointSize = Constants.INITIAL_POINT_SIZE;
