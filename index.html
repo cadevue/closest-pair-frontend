@@ -18,17 +18,17 @@
           <h1>Settings</h1>
           <div class="flex flex-col gap-1">
             <label for="numOfPoints">Number of Points</label>
-            <div class="flex items-center gap-4">
+            <div class="flex items-center justify-between gap-4 w-full">
               <input type="range" id="numOfPoints" />
               <span id="numOfPointsValue">2000</span>
             </div>
           </div>
         </div>
         <div class="flex flex-col gap-3">
-          <button id="generatePoints" class="bg-light text-dark-2 text-sm py-1 rounded-md cursor-pointer hover:bg-accent">
+          <button id="generatePoints" class="bg-light text-dark-2 text-sm py-1.5 rounded-md cursor-pointer hover:bg-gray-300">
             Generate New Random
           </button>
-          <button id="solve" class="bg-light text-dark-2 text-sm py-1 rounded-md cursor-pointer hover:bg-accent">
+          <button id="solve" class="bg-light text-dark-2 text-sm py-1.5 rounded-md cursor-pointer hover:bg-gray-300">
             Solve
           </button>
         </div>
@@ -38,11 +38,11 @@
         </div>
       </div>
       <div class="w-0.5 h-full bg-gray"></div>
-      <div class="flex-1 h-full bg-dark-2 text-light relative">
+      <div class="flex-1 h-full bg-dark-2 text-light relative" id="divideAndConquerContainer">
         <h1 class="absolute top-6 left-6">Divide and Conquer</h1>
       </div>
       <div class="w-0.5 h-full bg-gray"></div>
-      <div class="flex-1 h-full bg-dark-2 text-light relative">
+      <div class="flex-1 h-full bg-dark-2 text-light relative" id="bruteforceContainer">
         <h1 class="absolute top-6 left-6">Bruteforce</h1>
       </div>
     </div>
