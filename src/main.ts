@@ -1,7 +1,8 @@
 import * as THREE from "three"
-import { generateRandomPoints, Point, pointsToFloat32Array } from "./point";
 import 'vanilla-colorful';
+
 import Constants from "./const";
+import { generateRandomPoints, Point, pointsToFloat32Array } from "./point";
 import { createScatterPlotRenderer } from "./plot";
 
 /** Overlay */
@@ -17,7 +18,6 @@ window.addEventListener('resize', () => {
         overlay.classList.add("hidden");
     }
 });
-
 
 /** Variables */
 let numOfPoints = Constants.INITIAL_NUM_OF_POINTS;
