@@ -1,58 +1,97 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon-48x48.png" />
-		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon-48x48.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/src/style.css" />
     <title>Closest Pair Solver by Cadevue</title>
-  </head>
-  <body>
+</head>
+
+<body>
     <div id="app" class="flex w-full h-screen">
-      <div class="w-80 h-full bg-dark-1 text-light px-6 py-6 flex flex-col gap-8">
-        <div>
-          <h1 class="text-light-accent">Closest Pair Solver</h1>
-          <p>by Addin Munawwar</p>
-        </div>
-        <div class="flex flex-col gap-2">
-          <h1>Settings</h1>
-          <div class="flex flex-col gap-1">
-            <label for="numOfPoints">Number of Points</label>
-            <div class="flex items-center justify-between gap-4 w-full">
-              <input type="range" id="numOfPoints" />
-              <span id="numOfPointsValue">2000</span>
+        <!-- Sidebar -->
+        <div class="w-80 min-h-full bg-dark-1 text-light px-6 py-6 flex flex-col gap-8 overflow-y-scroll">
+            <!-- Header -->
+            <div>
+                <h1 class="text-light-accent">Closest Pair Solver</h1>
+                <p>by Addin Munawwar</p>
             </div>
-          </div>
-          <div class="flex flex-col gap-1">
-            <label for="pointSize">Point Size</label>
-            <div class="flex items-center justify-between gap-4 w-full">
-              <input type="range" id="pointSize" />
-              <span id="pointSizeValue">5</span>
+
+            <!-- Settings -->
+            <div class="flex flex-col gap-2">
+                <h1>Settings</h1>
+                <div class="flex flex-col gap-1">
+                    <label for="numOfPoints">Number of Points</label>
+                    <div class="flex items-center justify-between gap-4 w-full">
+                        <input type="range" id="numOfPoints" />
+                        <span id="numOfPointsValue">2000</span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label for="pointSize">Point Size</label>
+                    <div class="flex items-center justify-between gap-4 w-full">
+                        <input type="range" id="pointSize" />
+                        <span id="pointSizeValue">5</span>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <label for="pointColor">Point Color</label>
+                    <hex-color-picker class="mb-2" id="pointColor" value="#ba3a2c"></hex-color-picker>
+                    <button id="resetColor"
+                        class="w-48 bg-light text-dark-2 text-xs py-1 rounded-md cursor-pointer hover:bg-gray-300"
+                    >
+                        Reset Color
+                    </button>
+                </div>
             </div>
-          </div>
+
+            <!-- Actions -->
+            <div class="flex flex-col gap-3">
+                <h1>Actions</h1>
+                <button id="generatePoints"
+                    class="bg-light text-dark-2 text-sm py-1.5 rounded-md cursor-pointer hover:bg-gray-300">
+                    Generate New Random
+                </button>
+                <button id="solve"
+                    class="bg-light text-dark-2 text-sm py-1.5 rounded-md cursor-pointer hover:bg-gray-300">
+                    Solve
+                </button>
+            </div>
+
+            <!-- Logs -->
+            <div class="flex flex-col gap-2">
+                <h1>Logs</h1>
+                <p id="logp">Nothing to Log! Press Solve to see something!</p>
+            </div>
+
         </div>
-        <div class="flex flex-col gap-3">
-          <button id="generatePoints" class="bg-light text-dark-2 text-sm py-1.5 rounded-md cursor-pointer hover:bg-gray-300">
-            Generate New Random
-          </button>
-          <button id="solve" class="bg-light text-dark-2 text-sm py-1.5 rounded-md cursor-pointer hover:bg-gray-300">
-            Solve
-          </button>
+        <!-- Separator -->
+        <div class="w-0.5 h-full bg-gray"></div>
+
+        <!-- DnC Canvas -->
+        <div class="flex-1 h-full bg-dark-2 text-light relative" id="divideAndConquerContainer">
+            <div class="absolute top-6 left-6">
+                <h1>Divide and Conquer</h1>
+                <p class="text-gray-400 text-xs">Solve the closest pair problem using divide and conquer algorithm</p>
+            </div>
         </div>
-        <div class="flex flex-col gap-2">
-          <h1>Logs</h1>
-          <p id="logp">Nothing to Log! Press Solve to see something!</p>
+
+        <!-- Separator -->
+        <div class="w-0.5 h-full bg-gray"></div>
+
+        <!-- Bruteforce Canvas -->
+        <div class="flex-1 h-full bg-dark-2 text-light relative" id="bruteforceContainer">
+            <!-- <h1 class="absolute top-6 left-6">Bruteforce</h1> -->
+            <div class="absolute top-6 left-6">
+                <h1>Bruteforce</h1>
+                <p class="text-gray-400 text-xs">Solve the closest pair problem using bruteforce algorithm</p>
+            </div>
         </div>
-      </div>
-      <div class="w-0.5 h-full bg-gray"></div>
-      <div class="flex-1 h-full bg-dark-2 text-light relative" id="divideAndConquerContainer">
-        <h1 class="absolute top-6 left-6">Divide and Conquer</h1>
-      </div>
-      <div class="w-0.5 h-full bg-gray"></div>
-      <div class="flex-1 h-full bg-dark-2 text-light relative" id="bruteforceContainer">
-        <h1 class="absolute top-6 left-6">Bruteforce</h1>
-      </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
-  </body>
+</body>
+
 </html>

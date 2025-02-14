@@ -108,3 +108,19 @@ input[type='range']::-moz-range-thumb {
 input[type='range']::-moz-range-progress {
   @apply bg-accent h-1 rounded-full outline-none border-none;
 }
+
+/** Color picker */
+hex-color-picker {
+  height: 160px;
+  width: 192px;
+}
+
+hex-color-picker::part(saturation-pointer) {
+  width: 16px;
+  height: 16px;
+}
+
+hex-color-picker::part(hue-pointer) {
+  width: 16px;
+  height: 16px;
+}

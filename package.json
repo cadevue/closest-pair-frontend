@@ -16,6 +16,7 @@
     "@tailwindcss/vite": "^4.0.6",
     "@types/three": "^0.173.0",
     "tailwindcss": "^4.0.6",
-    "three": "^0.173.0"
+    "three": "^0.173.0",
+    "vanilla-colorful": "^0.7.2"
   }
 }
