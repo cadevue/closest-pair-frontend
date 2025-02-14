@@ -2,12 +2,36 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+		<link rel="icon" type="image/svg+xml" href="/favicon-48x48.png" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + TS</title>
+    <title>Closest Pair Solver by Cadevue</title>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app" class="flex w-full h-screen">
+      <div class="w-80 h-full bg-dark-1 text-light px-6 py-6">
+          <h1 class="text-light-accent">Closest Pair Solver</h1>
+          <p>by Addin Munawwar</p>
+          <div class="mt-6">
+            <h1>Settings</h1>
+            <div class="mt-4">
+              <label for="numOfPoints">Number of Points</label>
+              <div class="flex items-center gap-2">
+                <input type="range" id="numOfPoints" />
+                <span id="numOfPointsValue">2000</span>
+              </div>
+            </div>
+          </div>
+      </div>
+      <div class="w-0.5 h-full bg-gray"></div>
+      <div class="flex-1 h-full bg-dark-2 text-light relative">
+        <h1 class="absolute top-6 left-6">Divide and Conquer</h1>
+      </div>
+      <div class="w-0.5 h-full bg-gray"></div>
+      <div class="flex-1 h-full bg-dark-2 text-light relative">
+        <h1 class="absolute top-6 left-6">Bruteforce</h1>
+      </div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
