@@ -1,5 +1,6 @@
 import * as THREE from "three"
 import { OrbitControls } from "three/addons/controls/OrbitControls.js"
+
 import Constants from "./const";
 import { Point, pointsToFloat32Array } from "./point";
 

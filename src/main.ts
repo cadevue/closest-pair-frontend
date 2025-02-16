@@ -4,20 +4,10 @@ import 'vanilla-colorful';
 import Constants from "./const";
 import { generateRandomPoints, Point, pointsToFloat32Array } from "./point";
 import { createScatterPlotRenderer } from "./plot";
+import { initOverlay } from "./overlay";
 
-/** Overlay */
-const overlay = document.getElementById("overlay") as HTMLElement;
-if (window.innerWidth < 960 || window.innerHeight < 320) {
-    overlay.classList.remove("hidden");
-}
-
-window.addEventListener('resize', () => {
-    if (window.innerWidth < 960 || window.innerHeight < 320) {
-        overlay.classList.remove("hidden");
-    } else {
-        overlay.classList.add("hidden");
-    }
-});
+import "./solve.ts";
+import { solveClosestPair } from "./solve.ts";
 
 /** Variables */
 let numOfPoints = Constants.INITIAL_NUM_OF_POINTS;
@@ -131,9 +121,11 @@ function actionBind() {
 
     const solveButton = document.getElementById("solve") as HTMLButtonElement;
     solveButton.onclick = function() {
-        alert("Not implemented yet");
+        solveClosestPair(pointArr, numOfPoints);
     }
 }
 
 uiBind();
 actionBind();
+
+initOverlay(); // overlay for mobile users
