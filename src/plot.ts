@@ -1,11 +1,11 @@
 import * as THREE from "three"
 import { OrbitControls } from "three/addons/controls/OrbitControls.js"
 
-import Constants from "./const";
+import Constant from "./const";
 import { Point, pointsToFloat32Array } from "./point";
 
-const center = (Constants.MAX_POS_BOUND + Constants.MIN_POS_BOUND) / 2;
-const spread = Constants.MAX_POS_BOUND - Constants.MIN_POS_BOUND;
+const center = (Constant.MAX_POS_BOUND + Constant.MIN_POS_BOUND) / 2;
+const spread = Constant.MAX_POS_BOUND - Constant.MIN_POS_BOUND;
 
 export function createScatterPlotRenderer(
     container : HTMLElement, pointArr : Array<Point>, numOfPoints : number
@@ -14,7 +14,7 @@ export function createScatterPlotRenderer(
     const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 2000);
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setClearColor(Constants.CANVAS_COLOR);
+    renderer.setClearColor(Constant.CANVAS_COLOR);
     container.appendChild(renderer.domElement);
 
     renderer.domElement.onmousedown = (e: MouseEvent) => {
@@ -48,7 +48,7 @@ export function createScatterPlotRenderer(
     camera.position.set(spread, spread, spread);
 
     const geometry = new THREE.BufferGeometry();
-    const material = new THREE.PointsMaterial({ size: Constants.INITIAL_POINT_SIZE, color: Constants.DEFAULT_POINT_COLOR });
+    const material = new THREE.PointsMaterial({ size: Constant.INITIAL_POINT_SIZE, color: Constant.DEFAULT_POINT_COLOR });
 
     const positions = pointsToFloat32Array(pointArr, numOfPoints);
     geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));

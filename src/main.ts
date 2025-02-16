@@ -1,7 +1,7 @@
 import * as THREE from "three"
 import 'vanilla-colorful';
 
-import Constants from "./const";
+import Constant from "./const";
 import { generateRandomPoints, Point, pointsToFloat32Array } from "./point";
 import { createScatterPlotRenderer } from "./plot";
 import { initOverlay } from "./overlay";
@@ -10,17 +10,17 @@ import "./solve.ts";
 import { solveClosestPair } from "./solve.ts";
 
 /** Variables */
-let numOfPoints = Constants.INITIAL_NUM_OF_POINTS;
-let pointSize = Constants.INITIAL_POINT_SIZE;
-let pointColor = Constants.DEFAULT_POINT_COLOR;
+let numOfPoints = Constant.INITIAL_NUM_OF_POINTS;
+let pointSize = Constant.INITIAL_POINT_SIZE;
+let pointColor = Constant.DEFAULT_POINT_COLOR;
 let pointArr : Array<Point> = generateRandomPoints(
-    Constants.MAX_NUM_OF_POINTS,
-    Constants.MIN_POS_BOUND, 
-    Constants.MAX_POS_BOUND
+    Constant.MAX_NUM_OF_POINTS,
+    Constant.MIN_POS_BOUND, 
+    Constant.MAX_POS_BOUND
 );
 
-const center = (Constants.MAX_POS_BOUND + Constants.MIN_POS_BOUND) / 2;
-const spread = Constants.MAX_POS_BOUND - Constants.MIN_POS_BOUND;
+const center = (Constant.MAX_POS_BOUND + Constant.MIN_POS_BOUND) / 2;
+const spread = Constant.MAX_POS_BOUND - Constant.MIN_POS_BOUND;
 
 const dncContainer = document.getElementById("divideAndConquerContainer") as HTMLElement;
 const dncScatterPlotRenderer = createScatterPlotRenderer(dncContainer, pointArr, numOfPoints);
@@ -49,10 +49,10 @@ function uiBind() {
     const numOfPointsSlider = document.getElementById("numOfPoints") as HTMLInputElement;
     const numOfPointsValue = document.getElementById("numOfPointsValue") as HTMLSpanElement;
 
-    numOfPointsSlider.min = Constants.MIN_NUM_OF_POINTS.toString();
-    numOfPointsSlider.max = Constants.MAX_NUM_OF_POINTS.toString();
+    numOfPointsSlider.min = Constant.MIN_NUM_OF_POINTS.toString();
+    numOfPointsSlider.max = Constant.MAX_NUM_OF_POINTS.toString();
     numOfPointsSlider.step = "1";
-    numOfPointsSlider.value = Constants.INITIAL_NUM_OF_POINTS.toString();
+    numOfPointsSlider.value = Constant.INITIAL_NUM_OF_POINTS.toString();
     numOfPointsValue.innerHTML = numOfPointsSlider.value;
 
     numOfPointsSlider.oninput = function() {
@@ -65,10 +65,10 @@ function uiBind() {
     const pointSizeSlider = document.getElementById("pointSize") as HTMLInputElement;
     const pointSizeValue = document.getElementById("pointSizeValue") as HTMLSpanElement;
 
-    pointSizeSlider.min = Constants.MIN_POINT_SIZE.toString();
-    pointSizeSlider.max = Constants.MAX_POINT_SIZE.toString();
+    pointSizeSlider.min = Constant.MIN_POINT_SIZE.toString();
+    pointSizeSlider.max = Constant.MAX_POINT_SIZE.toString();
     pointSizeSlider.step = "0.01";
-    pointSizeSlider.value = Constants.INITIAL_POINT_SIZE.toString();
+    pointSizeSlider.value = Constant.INITIAL_POINT_SIZE.toString();
     pointSizeValue.innerHTML = pointSizeSlider.value;
 
     pointSizeSlider.oninput = function() {
@@ -79,7 +79,7 @@ function uiBind() {
     }
 
     const pointColorPicker = document.querySelector('hex-color-picker') as HTMLElement;
-    pointColorPicker.setAttribute('color', Constants.DEFAULT_POINT_COLOR);
+    pointColorPicker.setAttribute('color', Constant.DEFAULT_POINT_COLOR);
 
     // @ts-ignore, no types for vanilla-colorful
     pointColorPicker.addEventListener('color-changed', (e: CustomEvent) => {
@@ -90,8 +90,8 @@ function uiBind() {
 
     const resetColorButton = document.getElementById("resetColor") as HTMLButtonElement;
     resetColorButton.onclick = function() {
-        pointColor = Constants.DEFAULT_POINT_COLOR;
-        pointColorPicker.setAttribute('color', Constants.DEFAULT_POINT_COLOR);
+        pointColor = Constant.DEFAULT_POINT_COLOR;
+        pointColorPicker.setAttribute('color', Constant.DEFAULT_POINT_COLOR);
         syncMaterial();
     }
 
@@ -112,9 +112,9 @@ function actionBind() {
     const generateRandomPointsButton = document.getElementById("generatePoints") as HTMLButtonElement;
     generateRandomPointsButton.onclick = function() {
         pointArr = generateRandomPoints(
-            Constants.MAX_NUM_OF_POINTS,
-            Constants.MIN_POS_BOUND, 
-            Constants.MAX_POS_BOUND
+            Constant.MAX_NUM_OF_POINTS,
+            Constant.MIN_POS_BOUND, 
+            Constant.MAX_POS_BOUND
         );
         syncBuffer();
     }

@@ -4,6 +4,7 @@ const WS_URL = "ws://localhost:8080";
 
 interface SolveCPRequest {
     method: string;
+    dimension: number;
     points: number[];
 }
 
@@ -46,11 +47,13 @@ export function solveClosestPair(points: Array<Point>, numOfPoints: number) {
 
     const bruteForceRequest: SolveCPRequest = {
         method: "bruteforce",
+        dimension: 3,
         points: flattenPoints
     }
 
     const dncRequest: SolveCPRequest = {
         method: "dnc",
+        dimension: 3,
         points: flattenPoints
     }
 

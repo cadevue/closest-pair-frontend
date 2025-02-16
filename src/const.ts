@@ -12,7 +12,7 @@ const INITIAL_POINT_SIZE = 2;
 const DEFAULT_POINT_COLOR = "#ba3a2c";
 const CANVAS_COLOR = "#181818";
 
-const Constants = {
+const Constant = {
     MAX_NUM_OF_POINTS,
     MIN_NUM_OF_POINTS,
     INITIAL_NUM_OF_POINTS,
@@ -25,4 +25,4 @@ const Constants = {
     CANVAS_COLOR
 };
 
-export default Constants;
+export default Constant;
