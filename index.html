@@ -21,7 +21,7 @@
         <div id="overlay" class="fixed top-0 left-0 w-full h-full bg-dark-1 text-light z-50 hidden">
             <div class="flex items-center justify-center w-full h-full">
                 <div class="bg-dark-2 text-light p-6 rounded-md">
-                    <h1 class="text-center">Screen size is not suffice!</h1>
+                    <h1 class="text-center">Screen size does not suffice!</h1>
                     <p class="text-center">Please use a larger screen to view this page. Maybe Ctrl+Scroll to zoom out?</p>
                 </div>
             </div>
@@ -67,11 +67,11 @@
             <div class="flex flex-col gap-3">
                 <h1>Actions</h1>
                 <button id="generatePoints"
-                    class="bg-light text-dark-2 text-xs py-1.5 rounded-md cursor-pointer hover:bg-gray-300">
+                    class="bg-light text-dark-2 text-xs py-1.5 rounded-md cursor-pointer hover:bg-gray-300 disabled:opacity-50 disabled:bg-gray-300">
                     Randomize Points
                 </button>
                 <button id="solve"
-                    class="bg-light text-dark-2 text-xs py-1.5 rounded-md cursor-pointer hover:bg-gray-300">
+                    class="bg-light text-dark-2 text-xs py-1.5 rounded-md cursor-pointer hover:bg-gray-300 disabled:opacity-50 disabled:bg-gray-300">
                     Solve
                 </button>
             </div>
@@ -86,6 +86,12 @@
 
         <!-- DnC Canvas -->
         <div class="flex-1 h-full bg-dark-2 text-light relative overflow-hidden" id="divideAndConquerContainer">
+            <div 
+                class="absolute top-0 left-0 w-full h-full bg-black opacity-70 z-20 hidden justify-center items-center"
+                id="dncLoading"
+            >
+                <h1 class="!text-xl">Solving 🚀</h1>
+            </div>
             <div class="absolute top-6 left-6">
                 <h1>Divide and Conquer</h1>
                 <p class="text-gray-400 text-xs">Solve the closest pair problem using divide and conquer algorithm</p>
@@ -103,7 +109,12 @@
 
         <!-- Bruteforce Canvas -->
         <div class="flex-1 h-full bg-dark-2 text-light relative overflow-hidden" id="bruteforceContainer">
-            <!-- <h1 class="absolute top-6 left-6">Bruteforce</h1> -->
+            <div 
+                class="absolute top-0 left-0 w-full h-full bg-black opacity-70 z-20 hidden justify-center items-center"
+                id="bruteforceLoading"
+            >
+                <h1 class="!text-xl">Solving 🚀</h1>
+            </div>
             <div class="absolute top-6 left-6">
                 <h1>Bruteforce</h1>
                 <p class="text-gray-400 text-xs">Solve the closest pair problem using bruteforce algorithm</p>

@@ -43,7 +43,7 @@ ws.onerror = () => {
     console.error("An error occurred while connecting to the server! Is the server alive?");
 }
 
-export function solveClosestPair(points: Array<Point>, numOfPoints: number) {
+export function requestSolveToServer(points: Array<Point>, numOfPoints: number) {
     if (!isWsConnected) {
         console.warn("The WebSocket connection is not setup correctly");
         return;

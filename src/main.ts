@@ -7,7 +7,7 @@ import { createScatterPlotRenderer } from "./plot";
 import { initOverlay } from "./overlay";
 
 import "./solve.ts";
-import { addOnMessageCallback, solveClosestPair } from "./solve.ts";
+import { addOnMessageCallback, requestSolveToServer } from "./solve.ts";
 
 /** Variables */
 let numOfPoints = Constant.INITIAL_NUM_OF_POINTS;
@@ -28,8 +28,10 @@ const dncScatterPlotRenderer = createScatterPlotRenderer(dncContainer, pointArr,
 const bruteForceContainer = document.getElementById("bruteforceContainer") as HTMLElement;
 const bruteForceScatterPlotRenderer = createScatterPlotRenderer(bruteForceContainer, pointArr, numOfPoints);
 
+let solveOpsCounter = 0;
+
 /** State Syncing */
-function syncBuffer() {
+function syncGeometryBuffer() {
     const positions = pointsToFloat32Array(pointArr, numOfPoints);
 
     dncScatterPlotRenderer.geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
@@ -44,10 +46,51 @@ function syncMaterial() {
     bruteForceScatterPlotRenderer.material.color.set(pointColor);
 }
 
-/** DOM Binding */
-function uiBind() {
+/* DOM References */
+function getDOMRefs() {
     const numOfPointsSlider = document.getElementById("numOfPoints") as HTMLInputElement;
     const numOfPointsValue = document.getElementById("numOfPointsValue") as HTMLSpanElement;
+    const pointSizeSlider = document.getElementById("pointSize") as HTMLInputElement;
+    const pointSizeValue = document.getElementById("pointSizeValue") as HTMLSpanElement;
+    const pointColorPicker = document.querySelector('hex-color-picker') as HTMLElement;
+    const resetColorButton = document.getElementById("resetColor") as HTMLButtonElement;
+    const resetDncCameraButton = document.getElementById("resetDnCCam") as HTMLButtonElement;
+    const resetBruteForceCameraButton = document.getElementById("resetBruteforceCam") as HTMLButtonElement;
+    const generatePointsButton = document.getElementById("generatePoints") as HTMLButtonElement;
+    const solveButton = document.getElementById("solve") as HTMLButtonElement;
+    const dncLoading = document.getElementById("dncLoading") as HTMLElement;
+    const bruteForceLoading = document.getElementById("bruteforceLoading") as HTMLElement;
+
+    return {
+        numOfPointsSlider,
+        numOfPointsValue,
+        pointSizeSlider,
+        pointSizeValue,
+        pointColorPicker,
+        resetColorButton,
+        resetDncCameraButton,
+        resetBruteForceCameraButton,
+        generatePointsButton,
+        solveButton,
+        dncLoading,
+        bruteForceLoading
+    };
+}
+
+const domRefs = getDOMRefs();
+
+/** DOM Binding */
+function uiBind() {
+    const {
+        numOfPointsSlider,
+        numOfPointsValue,
+        pointSizeSlider,
+        pointSizeValue,
+        pointColorPicker,
+        resetColorButton,
+        resetDncCameraButton,
+        resetBruteForceCameraButton
+    } = domRefs;
 
     numOfPointsSlider.min = Constant.MIN_NUM_OF_POINTS.toString();
     numOfPointsSlider.max = Constant.MAX_NUM_OF_POINTS.toString();
@@ -59,11 +102,8 @@ function uiBind() {
         numOfPoints = parseInt(numOfPointsSlider.value);
         numOfPointsValue.innerHTML = numOfPoints.toString();
 
-        syncBuffer();
+        syncGeometryBuffer();
     }
-
-    const pointSizeSlider = document.getElementById("pointSize") as HTMLInputElement;
-    const pointSizeValue = document.getElementById("pointSizeValue") as HTMLSpanElement;
 
     pointSizeSlider.min = Constant.MIN_POINT_SIZE.toString();
     pointSizeSlider.max = Constant.MAX_POINT_SIZE.toString();
@@ -78,7 +118,6 @@ function uiBind() {
         syncMaterial();
     }
 
-    const pointColorPicker = document.querySelector('hex-color-picker') as HTMLElement;
     pointColorPicker.setAttribute('color', Constant.DEFAULT_POINT_COLOR);
 
     // @ts-ignore, no types for vanilla-colorful
@@ -88,20 +127,17 @@ function uiBind() {
         syncMaterial();
     });
 
-    const resetColorButton = document.getElementById("resetColor") as HTMLButtonElement;
     resetColorButton.onclick = function() {
         pointColor = Constant.DEFAULT_POINT_COLOR;
         pointColorPicker.setAttribute('color', Constant.DEFAULT_POINT_COLOR);
         syncMaterial();
     }
 
-    const resetDncCameraButton = document.getElementById("resetDnCCam") as HTMLButtonElement;
     resetDncCameraButton.onclick = function() {
         dncScatterPlotRenderer.controls.target.set(center, center, center);
         dncScatterPlotRenderer.camera.position.set(spread, spread, spread);
     }
 
-    const resetBruteForceCameraButton = document.getElementById("resetBruteforceCam") as HTMLButtonElement;
     resetBruteForceCameraButton.onclick = function() {
         bruteForceScatterPlotRenderer.controls.target.set(center, center, center);
         bruteForceScatterPlotRenderer.camera.position.set(spread, spread, spread);
@@ -109,25 +145,61 @@ function uiBind() {
 }
 
 function actionBind() {
-    const generateRandomPointsButton = document.getElementById("generatePoints") as HTMLButtonElement;
-    generateRandomPointsButton.onclick = function() {
+    const {
+        numOfPointsSlider,
+        generatePointsButton,
+        solveButton,
+        dncLoading,
+        bruteForceLoading
+    } = domRefs;
+
+    generatePointsButton.onclick = function() {
         pointArr = generateRandomPoints(
             Constant.MAX_NUM_OF_POINTS,
             Constant.MIN_POS_BOUND, 
             Constant.MAX_POS_BOUND
         );
-        syncBuffer();
+        syncGeometryBuffer();
     }
 
-    const solveButton = document.getElementById("solve") as HTMLButtonElement;
     solveButton.onclick = function() {
-        solveClosestPair(pointArr, numOfPoints);
+        requestSolveToServer(pointArr, numOfPoints);
+        solveOpsCounter += 2;
+
+        dncLoading.classList.remove("hidden");
+        dncLoading.classList.add("flex");
+
+        bruteForceLoading.classList.remove("hidden");
+        bruteForceLoading.classList.add("flex");
+
+        generatePointsButton.disabled = true;
+        solveButton.disabled = true;
+        numOfPointsSlider.disabled = true;
     }
 }
 
 function wsHandlerBind() {
-    addOnMessageCallback((response) => { console.log(response); });
+    addOnMessageCallback((response) => { 
+        switch (response.method) {
+            case "bruteforce":
+                domRefs.bruteForceLoading.classList.remove("flex");
+                domRefs.bruteForceLoading.classList.add("hidden");
+                break;
+            case "dnc":
+                domRefs.dncLoading.classList.remove("flex");
+                domRefs.dncLoading.classList.add("hidden");
+                break;
+        }
+
+        solveOpsCounter--;
+        if (solveOpsCounter === 0) {
+            domRefs.generatePointsButton.disabled = false;
+            domRefs.solveButton.disabled = false;
+            domRefs.numOfPointsSlider.disabled = false;
+        }
+    });
 }
+
 
 uiBind(); // input and result binding
 actionBind(); // action button binding
