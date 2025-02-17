@@ -13,6 +13,7 @@ interface SolveCPResponse {
     indexes: [number, number];
     distance: number;
     numOfEuclideanOps: number;
+    executionTime: number;
 }
 
 const ws = new WebSocket(WS_URL);
