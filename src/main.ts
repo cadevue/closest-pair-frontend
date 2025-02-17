@@ -7,7 +7,7 @@ import { createScatterPlotRenderer } from "./plot";
 import { initOverlay } from "./overlay";
 
 import "./solve.ts";
-import { solveClosestPair } from "./solve.ts";
+import { addOnMessageCallback, solveClosestPair } from "./solve.ts";
 
 /** Variables */
 let numOfPoints = Constant.INITIAL_NUM_OF_POINTS;
@@ -125,7 +125,21 @@ function actionBind() {
     }
 }
 
+function handlerBind() {
+    function euclideanDistance(p1: Point, p2: Point) {
+        return Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2) + Math.pow(p1.z - p2.z, 2)
+    }
+
+    addOnMessageCallback((response) => {
+        console.log(response);
+        console.log("Client calculated distance: " + euclideanDistance(
+            pointArr[response.indexes[0]], pointArr[response.indexes[1]]
+        ));
+    });
+}
+
 uiBind();
 actionBind();
+handlerBind();
 
 initOverlay(); // overlay for mobile users

@@ -11,10 +11,17 @@ interface SolveCPRequest {
 interface SolveCPResponse {
     method: string;
     indexes: [number, number];
+    distance: number;
+    numOfEuclideanOps: number;
 }
 
 const ws = new WebSocket(WS_URL);
 let isWsConnected = false;
+
+let onMessageCallbacks: Array<(response: SolveCPResponse) => void> = [];
+export function addOnMessageCallback(callback: (response: SolveCPResponse) => void) {
+    onMessageCallbacks.push(callback);
+}
 
 ws.onopen = () => {
     console.log("Connected to server");
@@ -23,8 +30,7 @@ ws.onopen = () => {
 
 ws.onmessage = (event) => {
     const response: SolveCPResponse = JSON.parse(event.data);
-    console.log("Received response from server");
-    console.log(response);
+    onMessageCallbacks.forEach(callback => callback(response));
 }
 
 ws.onclose = () => {
