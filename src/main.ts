@@ -5,9 +5,8 @@ import Constant from "./const";
 import { generateRandomPoints, Point, pointsToFloat32Array } from "./point";
 import { createScatterPlotRenderer } from "./plot";
 import { initOverlay } from "./overlay";
-
-import "./solve.ts";
 import { addOnMessageCallback, requestSolveToServer } from "./solve.ts";
+import { OrbitControls } from "three/examples/jsm/Addons.js";
 
 /** Variables */
 let numOfPoints = Constant.INITIAL_NUM_OF_POINTS;
@@ -133,15 +132,16 @@ function uiBind() {
         syncMaterial();
     }
 
-    resetDncCameraButton.onclick = function() {
-        dncScatterPlotRenderer.controls.target.set(center, center, center);
-        dncScatterPlotRenderer.camera.position.set(spread, spread, spread);
+    function resetCamera(camera: THREE.PerspectiveCamera, controls: OrbitControls) {
+        camera.position.set(spread, spread, spread);
+        controls.target.set(center, center, center);
     }
 
-    resetBruteForceCameraButton.onclick = function() {
-        bruteForceScatterPlotRenderer.controls.target.set(center, center, center);
-        bruteForceScatterPlotRenderer.camera.position.set(spread, spread, spread);
-    }
+    resetDncCameraButton.onclick = () => 
+        resetCamera(dncScatterPlotRenderer.camera, dncScatterPlotRenderer.controls);
+
+    resetBruteForceCameraButton.onclick = () => 
+        resetCamera(bruteForceScatterPlotRenderer.camera, bruteForceScatterPlotRenderer.controls);
 }
 
 function actionBind() {
