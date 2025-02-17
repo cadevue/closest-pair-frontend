@@ -128,6 +128,26 @@ function uiBind() {
 function toggleLoading(element: HTMLElement, show: boolean) {
     element.classList.toggle("hidden", !show);
     element.classList.toggle("flex", show);
+
+    if (show) {
+        let dots = 0;
+        const loadingText = element.querySelector("h1") as HTMLElement;
+
+        if (!loadingText) return;
+
+        const interval = setInterval(() => {
+            loadingText.innerHTML = `Solving ${" .".repeat(dots)}`;
+            dots = (dots + 1) % 4;
+        }, 250);
+
+        element.dataset["loadingInterval"] = interval.toString();
+    } else {
+        const interval = element.dataset["loadingInterval"];
+        if (interval) {
+            clearInterval(parseInt(interval));
+            element.querySelector("h1")!.innerHTML = "Solving";
+        }
+    }
 }
 
 function toggleUIInteraction(enable: boolean) {
