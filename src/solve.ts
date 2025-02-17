@@ -2,14 +2,16 @@ import { Point } from "./point";
 
 const WS_URL = "ws://localhost:8080";
 
-interface SolveCPRequest {
-    method: string;
+export type SolveMethod = "bruteforce" | "dnc";
+
+export interface SolveCPRequest {
+    method: SolveMethod;
     dimension: number;
     points: number[];
 }
 
-interface SolveCPResponse {
-    method: string;
+export interface SolveCPResponse {
+    method: SolveMethod;
     indexes: [number, number];
     distance: number;
     numOfEuclideanOps: number;

@@ -52,15 +52,6 @@
                         <span id="pointSizeValue">5</span>
                     </div>
                 </div>
-                <div class="flex flex-col gap-2">
-                    <label for="pointColor">Point Color</label>
-                    <hex-color-picker class="mb-2" id="pointColor" value="#ba3a2c"></hex-color-picker>
-                    <button id="resetColor"
-                        class="w-48 bg-light text-dark-2 text-xs py-1 rounded-md cursor-pointer hover:bg-gray-300"
-                    >
-                        Reset Color
-                    </button>
-                </div>
             </div>
 
             <!-- Actions -->
@@ -78,8 +69,10 @@
 
             <!-- Logs -->
             <div class="flex flex-col gap-2">
-                <h1>Logs</h1>
-                <p id="logp">Nothing to Log! Press Solve to see something!</p>
+                <h1>Result Logs</h1>
+                <pre class="bg-dark-2 text-light py-4 pl-4 pr-6 rounded-md h-fit overflow-x-scroll"
+                    id="logs"
+                ><span>Result will appear here!</span></pre>
             </div>
 
         </div>

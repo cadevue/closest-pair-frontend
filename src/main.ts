@@ -1,17 +1,19 @@
 import * as THREE from "three"
-import 'vanilla-colorful';
+import { OrbitControls } from "three/examples/jsm/Addons.js";
 
 import Constant from "./const";
 import { generateRandomPoints, Point, pointsToFloat32Array } from "./point";
 import { createScatterPlotRenderer } from "./plot";
 import { initOverlay } from "./overlay";
-import { addOnMessageCallback, requestSolveToServer } from "./solve.ts";
-import { OrbitControls } from "three/examples/jsm/Addons.js";
+import { addOnMessageCallback, requestSolveToServer, SolveCPResponse } from "./solve";
+import { clearDOMLogs, domLog } from "./log";
 
-/** Variables */
+/** State */
 let numOfPoints = Constant.INITIAL_NUM_OF_POINTS;
 let pointSize = Constant.INITIAL_POINT_SIZE;
 let pointColor = Constant.DEFAULT_POINT_COLOR;
+
+
 let pointArr : Array<Point> = generateRandomPoints(
     Constant.MAX_NUM_OF_POINTS,
     Constant.MIN_POS_BOUND, 
@@ -51,8 +53,6 @@ function getDOMRefs() {
     const numOfPointsValue = document.getElementById("numOfPointsValue") as HTMLSpanElement;
     const pointSizeSlider = document.getElementById("pointSize") as HTMLInputElement;
     const pointSizeValue = document.getElementById("pointSizeValue") as HTMLSpanElement;
-    const pointColorPicker = document.querySelector('hex-color-picker') as HTMLElement;
-    const resetColorButton = document.getElementById("resetColor") as HTMLButtonElement;
     const resetDncCameraButton = document.getElementById("resetDnCCam") as HTMLButtonElement;
     const resetBruteForceCameraButton = document.getElementById("resetBruteforceCam") as HTMLButtonElement;
     const generatePointsButton = document.getElementById("generatePoints") as HTMLButtonElement;
@@ -65,8 +65,6 @@ function getDOMRefs() {
         numOfPointsValue,
         pointSizeSlider,
         pointSizeValue,
-        pointColorPicker,
-        resetColorButton,
         resetDncCameraButton,
         resetBruteForceCameraButton,
         generatePointsButton,
@@ -85,8 +83,6 @@ function uiBind() {
         numOfPointsValue,
         pointSizeSlider,
         pointSizeValue,
-        pointColorPicker,
-        resetColorButton,
         resetDncCameraButton,
         resetBruteForceCameraButton
     } = domRefs;
@@ -117,21 +113,6 @@ function uiBind() {
         syncMaterial();
     }
 
-    pointColorPicker.setAttribute('color', Constant.DEFAULT_POINT_COLOR);
-
-    // @ts-ignore, no types for vanilla-colorful
-    pointColorPicker.addEventListener('color-changed', (e: CustomEvent) => {
-        const color = e.detail.value;
-        pointColor = color;
-        syncMaterial();
-    });
-
-    resetColorButton.onclick = function() {
-        pointColor = Constant.DEFAULT_POINT_COLOR;
-        pointColorPicker.setAttribute('color', Constant.DEFAULT_POINT_COLOR);
-        syncMaterial();
-    }
-
     function resetCamera(camera: THREE.PerspectiveCamera, controls: OrbitControls) {
         camera.position.set(spread, spread, spread);
         controls.target.set(center, center, center);
@@ -144,9 +125,19 @@ function uiBind() {
         resetCamera(bruteForceScatterPlotRenderer.camera, bruteForceScatterPlotRenderer.controls);
 }
 
+function toggleLoading(element: HTMLElement, show: boolean) {
+    element.classList.toggle("hidden", !show);
+    element.classList.toggle("flex", show);
+}
+
+function toggleUIInteraction(enable: boolean) {
+    domRefs.generatePointsButton.disabled = !enable;
+    domRefs.solveButton.disabled = !enable;
+    domRefs.numOfPointsSlider.disabled = !enable;
+}
+
 function actionBind() {
     const {
-        numOfPointsSlider,
         generatePointsButton,
         solveButton,
         dncLoading,
@@ -163,39 +154,47 @@ function actionBind() {
     }
 
     solveButton.onclick = function() {
+        clearDOMLogs();
+
         requestSolveToServer(pointArr, numOfPoints);
+        domLog("Bruteforce request sent to the server!");
+        domLog("DnC request sent to the server!\n");
+
         solveOpsCounter += 2;
 
-        dncLoading.classList.remove("hidden");
-        dncLoading.classList.add("flex");
+        toggleLoading(dncLoading, true);
+        toggleLoading(bruteForceLoading, true);
 
-        bruteForceLoading.classList.remove("hidden");
-        bruteForceLoading.classList.add("flex");
-
-        generatePointsButton.disabled = true;
-        solveButton.disabled = true;
-        numOfPointsSlider.disabled = true;
+        toggleUIInteraction(false);
     }
 }
 
 function wsHandlerBind() {
+    function printResultToDOMLogs(response: SolveCPResponse) {
+        domLog(`Receive result from:`);
+        domLog(`<b>${response.method === "bruteforce" ? "Brute Force Solver 🛠️" : "Divide and Conquer Solver ⚔️"}</b>`);
+
+        domLog(`  - Closest Pair Index      : [${response.indexes[0]}, ${response.indexes[1]}]`);
+        domLog(`  - Closest Distance        : ${response.distance.toFixed(6)} units`);
+        domLog(`  - Number of Euclidean Ops : ${response.numOfEuclideanOps.toLocaleString()} times`);
+        domLog(`  - Server Execution Time   : ${response.executionTime.toFixed(6)}s\n`);
+    }
+
     addOnMessageCallback((response) => { 
         switch (response.method) {
             case "bruteforce":
-                domRefs.bruteForceLoading.classList.remove("flex");
-                domRefs.bruteForceLoading.classList.add("hidden");
+                toggleLoading(domRefs.bruteForceLoading, false);
                 break;
             case "dnc":
-                domRefs.dncLoading.classList.remove("flex");
-                domRefs.dncLoading.classList.add("hidden");
+                toggleLoading(domRefs.dncLoading, false);
                 break;
         }
 
         solveOpsCounter--;
+        printResultToDOMLogs(response);
+
         if (solveOpsCounter === 0) {
-            domRefs.generatePointsButton.disabled = false;
-            domRefs.solveButton.disabled = false;
-            domRefs.numOfPointsSlider.disabled = false;
+            toggleUIInteraction(true);
         }
     });
 }
