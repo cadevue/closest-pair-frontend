@@ -1,15 +1,18 @@
 const MAX_NUM_OF_POINTS = 100000;
-const MIN_NUM_OF_POINTS = 1000;
+const MIN_NUM_OF_POINTS = 10000;
 const INITIAL_NUM_OF_POINTS = 50000;
 
 const MIN_POS_BOUND = -1000;
 const MAX_POS_BOUND = 1000;
 
-const MAX_POINT_SIZE = 20;
+const MAX_POINT_SIZE = 10;
 const MIN_POINT_SIZE = 0.01;
 const INITIAL_POINT_SIZE = 2;
 
-const DEFAULT_POINT_COLOR = "#ba3a2c";
+const PAIR_POINT_SIZE = 24;
+
+const DEFAULT_POINT_COLOR = "#ba3a2c"
+const DEFAULT_PAIR_COLOR = "#00ffc8";
 const CANVAS_COLOR = "#181818";
 
 const Constant = {
@@ -22,7 +25,9 @@ const Constant = {
     MIN_POINT_SIZE,
     INITIAL_POINT_SIZE,
     DEFAULT_POINT_COLOR,
-    CANVAS_COLOR
+    DEFAULT_PAIR_COLOR,
+    CANVAS_COLOR,
+    PAIR_POINT_SIZE
 };
 
 export default Constant;

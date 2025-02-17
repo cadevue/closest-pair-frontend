@@ -1,9 +1,10 @@
 import * as THREE from "three"
 import { OrbitControls } from "three/examples/jsm/Addons.js";
+import 'vanilla-colorful';
 
 import Constant from "./const";
 import { generateRandomPoints, Point, pointsToFloat32Array } from "./point";
-import { createScatterPlotRenderer } from "./plot";
+import { createScatterPlotRenderer, ScatterPlotRenderer } from "./plot";
 import { initOverlay } from "./overlay";
 import { addOnMessageCallback, requestSolveToServer, SolveCPResponse } from "./solve";
 import { clearDOMLogs, domLog } from "./log";
@@ -13,8 +14,7 @@ let numOfPoints = Constant.INITIAL_NUM_OF_POINTS;
 let pointSize = Constant.INITIAL_POINT_SIZE;
 let pointColor = Constant.DEFAULT_POINT_COLOR;
 
-
-let pointArr : Array<Point> = generateRandomPoints(
+let allPoints : Array<Point> = generateRandomPoints(
     Constant.MAX_NUM_OF_POINTS,
     Constant.MIN_POS_BOUND, 
     Constant.MAX_POS_BOUND
@@ -24,27 +24,32 @@ const center = (Constant.MAX_POS_BOUND + Constant.MIN_POS_BOUND) / 2;
 const spread = Constant.MAX_POS_BOUND - Constant.MIN_POS_BOUND;
 
 const dncContainer = document.getElementById("divideAndConquerContainer") as HTMLElement;
-const dncScatterPlotRenderer = createScatterPlotRenderer(dncContainer, pointArr, numOfPoints);
+const dncScatterPlotRenderer = createScatterPlotRenderer(dncContainer, allPoints, numOfPoints);
 
 const bruteForceContainer = document.getElementById("bruteforceContainer") as HTMLElement;
-const bruteForceScatterPlotRenderer = createScatterPlotRenderer(bruteForceContainer, pointArr, numOfPoints);
+const bruteForceScatterPlotRenderer = createScatterPlotRenderer(bruteForceContainer, allPoints, numOfPoints);
 
 let solveOpsCounter = 0;
 
 /** State Syncing */
-function syncGeometryBuffer() {
-    const positions = pointsToFloat32Array(pointArr, numOfPoints);
+function syncAllPointsGeometry() {
+    const positions = pointsToFloat32Array(allPoints, numOfPoints);
 
-    dncScatterPlotRenderer.geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    bruteForceScatterPlotRenderer.geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    dncScatterPlotRenderer.allPoints.geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    bruteForceScatterPlotRenderer.allPoints.geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
 }
 
-function syncMaterial() {
-    dncScatterPlotRenderer.material.size = pointSize;
-    bruteForceScatterPlotRenderer.material.size = pointSize;
+function syncAllPointsMaterial() {
+    dncScatterPlotRenderer.allPoints.material.size = pointSize;
+    bruteForceScatterPlotRenderer.allPoints.material.size = pointSize;
 
-    dncScatterPlotRenderer.material.color.set(pointColor);
-    bruteForceScatterPlotRenderer.material.color.set(pointColor);
+    dncScatterPlotRenderer.allPoints.material.color.set(pointColor);
+    bruteForceScatterPlotRenderer.allPoints.material.color.set(pointColor);
+}
+
+function setClosestPairGeometry(plot: ScatterPlotRenderer, closestPair: Array<Point>) {
+    const positions = pointsToFloat32Array(closestPair, closestPair.length);
+    plot.closestPair.geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
 }
 
 /* DOM References */
@@ -70,7 +75,7 @@ function getDOMRefs() {
         generatePointsButton,
         solveButton,
         dncLoading,
-        bruteForceLoading
+        bruteForceLoading,
     };
 }
 
@@ -84,7 +89,7 @@ function uiBind() {
         pointSizeSlider,
         pointSizeValue,
         resetDncCameraButton,
-        resetBruteForceCameraButton
+        resetBruteForceCameraButton,
     } = domRefs;
 
     numOfPointsSlider.min = Constant.MIN_NUM_OF_POINTS.toString();
@@ -97,7 +102,7 @@ function uiBind() {
         numOfPoints = parseInt(numOfPointsSlider.value);
         numOfPointsValue.innerHTML = numOfPoints.toString();
 
-        syncGeometryBuffer();
+        syncAllPointsGeometry();
     }
 
     pointSizeSlider.min = Constant.MIN_POINT_SIZE.toString();
@@ -110,7 +115,7 @@ function uiBind() {
         pointSize = parseFloat(pointSizeSlider.value);
         pointSizeValue.innerHTML = pointSize.toString();
 
-        syncMaterial();
+        syncAllPointsMaterial();
     }
 
     function resetCamera(camera: THREE.PerspectiveCamera, controls: OrbitControls) {
@@ -136,7 +141,7 @@ function toggleLoading(element: HTMLElement, show: boolean) {
         if (!loadingText) return;
 
         const interval = setInterval(() => {
-            loadingText.innerHTML = `Solving ${" .".repeat(dots)}`;
+            loadingText.innerHTML = `Solving ${" .".repeat(dots)} 🚀`;
             dots = (dots + 1) % 4;
         }, 250);
 
@@ -165,18 +170,21 @@ function actionBind() {
     } = domRefs;
 
     generatePointsButton.onclick = function() {
-        pointArr = generateRandomPoints(
+        allPoints = generateRandomPoints(
             Constant.MAX_NUM_OF_POINTS,
             Constant.MIN_POS_BOUND, 
             Constant.MAX_POS_BOUND
         );
-        syncGeometryBuffer();
+        syncAllPointsGeometry();
+
+        setClosestPairGeometry(dncScatterPlotRenderer, []);
+        setClosestPairGeometry(bruteForceScatterPlotRenderer, []);
     }
 
     solveButton.onclick = function() {
         clearDOMLogs();
 
-        requestSolveToServer(pointArr, numOfPoints);
+        requestSolveToServer(allPoints, numOfPoints);
         domLog("Bruteforce request sent to the server!");
         domLog("DnC request sent to the server!\n");
 
@@ -197,16 +205,23 @@ function wsHandlerBind() {
         domLog(`  - Closest Pair Index      : [${response.indexes[0]}, ${response.indexes[1]}]`);
         domLog(`  - Closest Distance        : ${response.distance.toFixed(6)} units`);
         domLog(`  - Number of Euclidean Ops : ${response.numOfEuclideanOps.toLocaleString()} times`);
-        domLog(`  - Server Execution Time   : ${response.executionTime.toFixed(6)}s\n`);
+        domLog(`  - Server Execution Time   : ${response.executionTime.toFixed(6)}s`);
+        domLog(`Closest Pair has been highlighted in the scatter plot! 🎉\n`);
     }
 
     addOnMessageCallback((response) => { 
         switch (response.method) {
             case "bruteforce":
                 toggleLoading(domRefs.bruteForceLoading, false);
+                setClosestPairGeometry(bruteForceScatterPlotRenderer, [
+                    allPoints[response.indexes[0]], allPoints[response.indexes[1]]
+                ]);
                 break;
             case "dnc":
                 toggleLoading(domRefs.dncLoading, false);
+                setClosestPairGeometry(dncScatterPlotRenderer, [
+                    allPoints[response.indexes[0]], allPoints[response.indexes[1]]
+                ]);
                 break;
         }
 

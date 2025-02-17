@@ -47,7 +47,7 @@ ws.onerror = () => {
 
 export function requestSolveToServer(points: Array<Point>, numOfPoints: number) {
     if (!isWsConnected) {
-        console.warn("The WebSocket connection is not setup correctly");
+        console.error("The WebSocket connection is not setup correctly");
         return;
     }
 
