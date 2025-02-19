@@ -1,3 +1,4 @@
+import { overlayServerError } from "./overlay";
 import { Point } from "./point";
 
 const WS_URL = "ws://localhost:8080";
@@ -43,6 +44,7 @@ ws.onclose = () => {
 
 ws.onerror = () => {
     console.error("An error occurred while connecting to the server! Is the server alive?");
+    overlayServerError();
 }
 
 export function requestSolveToServer(points: Array<Point>, numOfPoints: number) {
