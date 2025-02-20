@@ -5,27 +5,45 @@ let error = false;
 
 export function initOverlay() {
     if (window.innerWidth < 960 || window.innerHeight < 320) {
-        overlay.classList.remove("hidden");
+        if (error) return;
+        setAndShowOverlay(
+            "Screen size does not suffice!",
+            "Please use a larger screen to view this page. Maybe Ctrl+Scroll to zoom out?"
+        )
     }
 
     window.addEventListener('resize', () => {
+        if (error) return;
         if (window.innerWidth < 960 || window.innerHeight < 320) {
-            overlay.classList.remove("hidden");
-        } else if (!error) {
-            overlay.classList.add("hidden");
+            setAndShowOverlay(
+                "Screen size does not suffice!",
+                "Please use a larger screen to view this page. Maybe Ctrl+Scroll to zoom out?"
+            )
+        } else {
+            hideOverlay();
         }
     });
 }
 
-export function overlayServerError() {
+export function setOverlay(header : string, text : string, isError = false) {
     const errorHeader = overlay.querySelector("h1") as HTMLElement;
     const errorText = overlay.querySelector("p") as HTMLElement;
 
-    errorHeader.innerText = "Server Error!";
-    errorText.innerText = ` An error occurred while connecting to the backend server! Is the server alive?
-Try refreshing the page! If the problem persists, contact: \n\nmoonawardev@gmail.com`;
+    error = isError;
 
+    errorHeader.innerText = header;
+    errorText.innerText = text;
+}
+
+export function setAndShowOverlay(header : string, text : string, isError = false) {
+    setOverlay(header, text, isError);
+    showOverlay();
+}
+
+export function showOverlay() {
     overlay.classList.remove("hidden");
+}
 
-    error = true;
+export function hideOverlay() {
+    overlay.classList.add("hidden");
 }

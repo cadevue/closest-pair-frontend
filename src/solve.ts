@@ -1,7 +1,7 @@
-import { overlayServerError } from "./overlay";
+import { setAndShowOverlay } from "./overlay";
 import { Point } from "./point";
 
-const WS_URL = "ws://localhost:8080";
+const WS_URL = "https://api.cadevue.com/closestpair-be";
 
 export type SolveMethod = "bruteforce" | "dnc";
 
@@ -39,12 +39,24 @@ ws.onmessage = (event) => {
 
 ws.onclose = () => {
     console.log("The connection is closed");
+    if (isWsConnected) {
+        setAndShowOverlay(
+            "Server Closed the Connection!", 
+            `The server closed the connection! Could be due to inactivity. Try refreshing the page!`,
+            true
+        );
+    }
     isWsConnected = false;
 }
 
 ws.onerror = () => {
     console.error("An error occurred while connecting to the server! Is the server alive?");
-    overlayServerError();
+    setAndShowOverlay(
+        "Server Error!", 
+        `An error occurred while connecting to the backend server! Is the server alive?
+Try refreshing the page! If the problem persists, contact: \n\nmoonawardev@gmail.com`,
+        true
+    );
 }
 
 export function requestSolveToServer(points: Array<Point>, numOfPoints: number) {
